@@ -1,0 +1,5 @@
+2026-04-05 10:00:01 INFO Application started
+2026-04-05 10:01:15 WARNING Disk space low
+2026-04-05 10:02:22 ERROR Failed to connect to database
+2026-04-05 10:03:10 INFO Processing request
+2026-04-05 10:04:45 ERROR Timeout while calling API
