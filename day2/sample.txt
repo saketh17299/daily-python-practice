@@ -1,0 +1,4 @@
+Python is simple and powerful.
+Python is used in web development, data analysis, AI, and automation.
+Automation with Python can save time.
+Learning Python every day builds strong programming skills.
