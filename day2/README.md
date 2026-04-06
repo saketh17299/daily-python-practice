@@ -1,18 +1,30 @@
-# Day 2 - Word Frequency Counter
+# Day 2 - Advanced Word Frequency Counter
 
-## What I learned
+## Overview
 
-- Reading text files in Python
-- Converting text to lowercase
-- Removing punctuation
-- Counting words using Counter
+This Python script reads text from a file, cleans it, removes common stopwords, counts word frequency, and generates summary statistics.
 
-## Output
+## Features
 
-Shows the top 10 most frequent words from a text file.
+- Lowercase conversion
+- Punctuation removal
+- Stopword filtering
+- Word frequency counting
+- Unique word count
+- Average word length
+- Output saved to a file
 
-## Next Improvements
+## Files
 
-- Ignore common stopwords like "is", "and", "the"
-- Sort alphabetically when counts are equal
-- Save results into another file
+- `word_frequency.py` → main script
+- `sample.txt` → sample input text
+- `results.txt` → generated output file
+
+## Concepts Practiced
+
+- File handling
+- Functions
+- Lists and list comprehensions
+- Dictionaries / Counter
+- String processing
+- Exception handling
