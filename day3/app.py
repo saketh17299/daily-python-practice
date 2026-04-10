@@ -1,3 +1,4 @@
+from datetime import datetime
 from database import initialize_database
 from expense_manager import ExpenseManager
 
@@ -9,8 +10,10 @@ def print_menu():
     print("3. View Total Spent")
     print("4. View Spending by Category")
     print("5. Filter Expenses by Category")
-    print("6. Delete Expense")   # NEW
-    print("7. Exit")             # shifted
+    print("6. Delete Expense")
+    print("7. Update Expense")
+    print("8. Export Expenses to CSV")
+    print("9. Exit")
 
 
 def print_expenses(expenses):
@@ -25,6 +28,40 @@ def print_expenses(expenses):
         print(f"{expense_id} | {title} | {category} | ${amount:.2f} | {expense_date}")
 
 
+def is_valid_date(date_text):
+    try:
+        datetime.strptime(date_text, "%Y-%m-%d")
+        return True
+    except ValueError:
+        return False
+
+
+def get_expense_input():
+    title = input("Enter expense title: ").strip()
+    category = input("Enter category: ").strip()
+    amount_input = input("Enter amount: ").strip()
+    expense_date = input("Enter date (YYYY-MM-DD): ").strip()
+
+    if not title or not category or not expense_date:
+        print("All fields are required and cannot be empty.")
+        return None
+
+    try:
+        amount = float(amount_input)
+        if amount <= 0:
+            print("Amount must be greater than 0.")
+            return None
+    except ValueError:
+        print("Invalid amount.")
+        return None
+
+    if not is_valid_date(expense_date):
+        print("Invalid date format. Use YYYY-MM-DD.")
+        return None
+
+    return title, category, amount, expense_date
+
+
 def main():
     initialize_database()
     manager = ExpenseManager()
@@ -34,25 +71,11 @@ def main():
         choice = input("Enter your choice: ").strip()
 
         if choice == "1":
-            title = input("Enter expense title: ").strip()
-            category = input("Enter category: ").strip()
-            amount_input = input("Enter amount: ").strip()
-            expense_date = input("Enter date (YYYY-MM-DD): ").strip()
-
-            # ✅ Improved validation
-            if not title.strip() or not category.strip() or not expense_date.strip():
-                print("All fields are required and cannot be empty.")
+            expense_data = get_expense_input()
+            if expense_data is None:
                 continue
 
-            try:
-                amount = float(amount_input)
-                if amount <= 0:
-                    print("Amount must be greater than 0.")
-                    continue
-            except ValueError:
-                print("Invalid amount.")
-                continue
-
+            title, category, amount, expense_date = expense_data
             manager.add_expense(title, category, amount, expense_date)
             print("Expense added successfully.")
 
@@ -79,7 +102,6 @@ def main():
             expenses = manager.filter_by_category(category)
             print_expenses(expenses)
 
-        # ✅ NEW DELETE FEATURE
         elif choice == "6":
             expense_id_input = input("Enter Expense ID to delete: ").strip()
 
@@ -97,6 +119,33 @@ def main():
                 print("Expense not found.")
 
         elif choice == "7":
+            expense_id_input = input("Enter Expense ID to update: ").strip()
+
+            try:
+                expense_id = int(expense_id_input)
+            except ValueError:
+                print("Invalid ID.")
+                continue
+
+            expense_data = get_expense_input()
+            if expense_data is None:
+                continue
+
+            title, category, amount, expense_date = expense_data
+            updated = manager.update_expense(
+                expense_id, title, category, amount, expense_date
+            )
+
+            if updated:
+                print("Expense updated successfully.")
+            else:
+                print("Expense not found.")
+
+        elif choice == "8":
+            file_name = manager.export_to_csv()
+            print(f"Expenses exported successfully to {file_name}")
+
+        elif choice == "9":
             print("Exiting Expense Tracker.")
             break
 

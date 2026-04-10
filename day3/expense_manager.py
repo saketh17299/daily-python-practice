@@ -1,4 +1,5 @@
 from database import get_connection
+import csv
 
 
 class ExpenseManager:
@@ -67,7 +68,6 @@ class ExpenseManager:
         conn.close()
         return rows
 
-    # ✅ NEW METHOD
     def delete_expense(self, expense_id):
         conn = get_connection()
         cursor = conn.cursor()
@@ -79,3 +79,29 @@ class ExpenseManager:
         conn.close()
 
         return rows_deleted
+
+    def update_expense(self, expense_id, title, category, amount, expense_date):
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            UPDATE expenses
+            SET title = ?, category = ?, amount = ?, expense_date = ?
+            WHERE id = ?
+        """, (title, category, amount, expense_date, expense_id))
+
+        conn.commit()
+        rows_updated = cursor.rowcount
+        conn.close()
+
+        return rows_updated
+
+    def export_to_csv(self, output_file="expenses_export.csv"):
+        expenses = self.view_expenses()
+
+        with open(output_file, "w", newline="", encoding="utf-8") as csv_file:
+            writer = csv.writer(csv_file)
+            writer.writerow(["ID", "Title", "Category", "Amount", "Date"])
+            writer.writerows(expenses)
+
+        return output_file

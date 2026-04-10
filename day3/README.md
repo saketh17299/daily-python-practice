@@ -11,11 +11,16 @@ This project is a command-line expense tracker built with Python and SQLite.
 - Filter expenses by category
 - Calculate total spending
 - Show category-wise summary
+- Delete expenses by ID
+- Update expenses by ID
+- Validate date format
+- Export expenses to CSV
 
 ## Tech Used
 
 - Python
 - SQLite
+- CSV module
 - Object-oriented design
 - SQL queries
 
@@ -28,10 +33,11 @@ This project demonstrates practical backend concepts:
 - modular project structure
 - input validation
 - reporting logic
+- file export support
 
 ## Future Enhancements
 
-- Add update and delete expense features
-- Export reports to CSV
+- Add monthly summary dashboard
+- Add login/authentication
 - Build REST API using Flask or FastAPI
 - Add frontend using React or Angular
