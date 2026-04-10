@@ -66,3 +66,16 @@ class ExpenseManager:
 
         conn.close()
         return rows
+
+    # ✅ NEW METHOD
+    def delete_expense(self, expense_id):
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("DELETE FROM expenses WHERE id = ?", (expense_id,))
+        conn.commit()
+
+        rows_deleted = cursor.rowcount
+        conn.close()
+
+        return rows_deleted
