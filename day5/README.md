@@ -16,6 +16,8 @@ This project is a Task Manager REST API built with Flask and SQLite.
 - Filter tasks by priority
 - Validate due date format
 - Return JSON responses
+- Get summary of tasks by status and priority
+- Get overdue tasks
 
 ## Tech Used
 
@@ -61,7 +63,15 @@ Filter tasks by status.
 
 Filter tasks by priority.
 
-### GET /tasks/<id>
+### GET /tasks/summary
+
+Get counts of tasks grouped by status and priority.
+
+### GET /tasks/overdue
+
+Get tasks whose due date has passed and are not completed.
+
+### GET /tasks/{id}
 
 Get task by ID.
 
