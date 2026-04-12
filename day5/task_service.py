@@ -1,3 +1,4 @@
+from datetime import datetime
 from database import get_connection
 
 
@@ -107,3 +108,48 @@ class TaskService:
         conn.close()
 
         return deleted_count > 0
+
+    def get_summary(self):
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT status, COUNT(*) as count
+            FROM tasks
+            GROUP BY status
+            ORDER BY count DESC, status ASC
+        """)
+        status_summary = cursor.fetchall()
+
+        cursor.execute("""
+            SELECT priority, COUNT(*) as count
+            FROM tasks
+            GROUP BY priority
+            ORDER BY count DESC, priority ASC
+        """)
+        priority_summary = cursor.fetchall()
+
+        conn.close()
+
+        return {
+            "status_summary": [dict(row) for row in status_summary],
+            "priority_summary": [dict(row) for row in priority_summary]
+        }
+
+    def get_overdue_tasks(self):
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        today = datetime.today().strftime("%Y-%m-%d")
+
+        cursor.execute("""
+            SELECT id, title, description, status, priority, due_date
+            FROM tasks
+            WHERE due_date < ? AND status != 'completed'
+            ORDER BY due_date ASC, id ASC
+        """, (today,))
+
+        rows = cursor.fetchall()
+        conn.close()
+
+        return [dict(row) for row in rows]

@@ -74,7 +74,9 @@ def home():
             "PATCH /tasks/<id>/status",
             "DELETE /tasks/<id>",
             "GET /tasks?status=pending",
-            "GET /tasks?priority=high"
+            "GET /tasks?priority=high",
+            "GET /tasks/summary",
+            "GET /tasks/overdue"
         ]
     })
 
@@ -95,6 +97,18 @@ def get_tasks():
             return jsonify({"error": "Invalid priority filter."}), 400
 
     tasks = task_service.get_all_tasks(status=status, priority=priority)
+    return jsonify(tasks), 200
+
+
+@app.route("/tasks/summary", methods=["GET"])
+def get_summary():
+    summary = task_service.get_summary()
+    return jsonify(summary), 200
+
+
+@app.route("/tasks/overdue", methods=["GET"])
+def get_overdue_tasks():
+    tasks = task_service.get_overdue_tasks()
     return jsonify(tasks), 200
 
 
