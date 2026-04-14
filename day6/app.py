@@ -100,6 +100,7 @@ def home():
             "POST /login"
         ],
         "protected_endpoints": [
+            "POST /logout",
             "GET /tasks",
             "GET /tasks/<id>",
             "POST /tasks",
@@ -167,6 +168,18 @@ def login():
     return jsonify({
         "message": "Login successful.",
         "token": token
+    }), 200
+
+
+@app.route("/logout", methods=["POST"])
+@require_auth
+def logout():
+    current_user = request.current_user
+
+    user_service.clear_user_token(current_user["id"])
+
+    return jsonify({
+        "message": "Logout successful. Token invalidated."
     }), 200
 
 

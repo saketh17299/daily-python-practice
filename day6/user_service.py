@@ -76,3 +76,16 @@ class UserService:
 
         conn.commit()
         conn.close()
+
+    def clear_user_token(self, user_id):
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            UPDATE users
+            SET token = NULL
+            WHERE id = ?
+        """, (user_id,))
+
+        conn.commit()
+        conn.close()
