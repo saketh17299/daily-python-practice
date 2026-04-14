@@ -25,6 +25,8 @@ This project extends the Task Manager REST API by adding basic user authenticati
 
 ## Authentication Flow
 
+- Logout endpoint to invalidate token
+
 ### Register
 
 `POST /register`
@@ -37,3 +39,8 @@ Sample JSON:
   "password": "1234"
 }
 ```
+
+### Logout
+
+`POST /logout`
+Invalidates the current user's token.
