@@ -18,7 +18,8 @@ def initialize_database():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             original_url TEXT NOT NULL,
             short_code TEXT NOT NULL UNIQUE,
-            created_at TEXT NOT NULL
+            created_at TEXT NOT NULL,
+            clicks INTEGER DEFAULT 0
         )
     """)
 

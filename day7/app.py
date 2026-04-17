@@ -18,13 +18,14 @@ def home():
         "endpoints": [
             "POST /shorten",
             "GET /urls",
+            "GET /urls/<short_code>/stats",
             "GET /<short_code>"
         ],
         "next_improvements": [
-            "click tracking",
             "custom short codes",
             "authentication",
-            "delete short URLs"
+            "delete short URLs",
+            "better URL validation"
         ]
     })
 
@@ -58,6 +59,7 @@ def shorten_url():
             "original_url": url_record["original_url"],
             "short_code": url_record["short_code"],
             "short_url": short_url,
+            "clicks": url_record["clicks"],
             "created_at": url_record["created_at"]
         }
     }), 201
@@ -74,10 +76,28 @@ def get_urls():
             "original_url": url["original_url"],
             "short_code": url["short_code"],
             "short_url": request.host_url.rstrip("/") + "/" + url["short_code"],
+            "clicks": url["clicks"],
             "created_at": url["created_at"]
         })
 
     return jsonify(result), 200
+
+
+@app.route("/urls/<short_code>/stats", methods=["GET"])
+def get_url_stats(short_code):
+    url = url_service.get_url_by_short_code(short_code)
+
+    if not url:
+        return jsonify({"error": "Short URL not found."}), 404
+
+    return jsonify({
+        "id": url["id"],
+        "original_url": url["original_url"],
+        "short_code": url["short_code"],
+        "short_url": request.host_url.rstrip("/") + "/" + url["short_code"],
+        "clicks": url["clicks"],
+        "created_at": url["created_at"]
+    }), 200
 
 
 @app.route("/<short_code>", methods=["GET"])
@@ -87,8 +107,9 @@ def redirect_to_original_url(short_code):
     if not url_record:
         return jsonify({"error": "Short URL not found."}), 404
 
+    url_service.increment_click(short_code)
     return redirect(url_record["original_url"])
-    
+
 
 if __name__ == "__main__":
     initialize_database()

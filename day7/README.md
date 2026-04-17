@@ -9,6 +9,8 @@ This project is a basic URL Shortener API built with Flask and SQLite.
 - Create short URLs
 - Redirect to original URLs using short code
 - View all shortened URLs
+- Track number of clicks for each short URL
+- View stats for a short URL
 - Store URL mappings in SQLite
 
 ## Tech Used
@@ -39,9 +41,13 @@ Sample JSON:
 
 Get all shortened URLs.
 
+### GET /urls/<short_code>/stats
+
+Get analytics for a short URL.
+
 ### GET /<short_code>
 
-Redirect to the original URL.
+Redirect to the original URL and increase click count.
 
 ## How to Run
 
@@ -76,6 +82,12 @@ curl -X POST http://127.0.0.1:5000/shorten \
 curl http://127.0.0.1:5000/urls
 ```
 
+### Get stats for a short URL
+
+```bash
+curl http://127.0.0.1:5000/urls/abc123/stats
+```
+
 ### Open in browser
 
 ```text
@@ -84,8 +96,8 @@ http://127.0.0.1:5000/abc123
 
 ## Scope for Next Improvements
 
-- Add click count tracking
 - Add delete endpoint
 - Add custom short code support
 - Add user authentication
-- Add URL validation improvements
+- Add better URL validation
+- Add expiration dates
