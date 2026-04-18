@@ -155,3 +155,18 @@ curl -X DELETE http://127.0.0.1:5000/notes/1
 - Added `created_at` timestamp for note creation
 - Added `updated_at` timestamp for note updates
 - Automatically updates `updated_at` when note is modified
+
+## New Features (Day 8.2)
+
+- Added soft archive support using `is_archived`
+- Added endpoint to archive notes without deleting them
+- Added endpoint to view archived notes
+- Hidden archived notes from normal note listing and search
+
+### GET /notes/archived
+
+Get all archived notes.
+
+### PATCH /notes/{id}/archive
+
+Archive a note without deleting it.

@@ -36,19 +36,20 @@ def home():
         "message": "Notes API is running",
         "endpoints": [
             "GET /notes",
+            "GET /notes/archived",
             "GET /notes/<id>",
             "POST /notes",
             "PUT /notes/<id>",
+            "PATCH /notes/<id>/archive",
             "DELETE /notes/<id>",
             "GET /notes/search?q=keyword",
             "GET /notes/tag/<tag>"
         ],
         "next_improvements": [
-            "archive notes",
             "favorite notes",
-            "timestamps",
             "pagination",
-            "authentication"
+            "authentication",
+            "restore archived notes"
         ]
     })
 
@@ -56,6 +57,12 @@ def home():
 @app.route("/notes", methods=["GET"])
 def get_notes():
     notes = note_service.get_all_notes()
+    return jsonify(notes), 200
+
+
+@app.route("/notes/archived", methods=["GET"])
+def get_archived_notes():
+    notes = note_service.get_archived_notes()
     return jsonify(notes), 200
 
 
@@ -108,9 +115,22 @@ def update_note(note_id):
     )
 
     if not updated_note:
-        return jsonify({"error": "Note not found."}), 404
+        return jsonify({"error": "Active note not found."}), 404
 
     return jsonify(updated_note), 200
+
+
+@app.route("/notes/<int:note_id>/archive", methods=["PATCH"])
+def archive_note(note_id):
+    archived_note = note_service.archive_note(note_id)
+
+    if not archived_note:
+        return jsonify({"error": "Active note not found or already archived."}), 404
+
+    return jsonify({
+        "message": "Note archived successfully.",
+        "note": archived_note
+    }), 200
 
 
 @app.route("/notes/<int:note_id>", methods=["DELETE"])

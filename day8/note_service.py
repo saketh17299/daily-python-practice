@@ -8,8 +8,25 @@ class NoteService:
         cursor = conn.cursor()
 
         cursor.execute("""
-            SELECT id, title, content, tags, created_at, updated_at
+            SELECT id, title, content, tags, created_at, updated_at, is_archived
             FROM notes
+            WHERE is_archived = 0
+            ORDER BY id DESC
+        """)
+
+        rows = cursor.fetchall()
+        conn.close()
+
+        return [dict(row) for row in rows]
+
+    def get_archived_notes(self):
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT id, title, content, tags, created_at, updated_at, is_archived
+            FROM notes
+            WHERE is_archived = 1
             ORDER BY id DESC
         """)
 
@@ -23,7 +40,7 @@ class NoteService:
         cursor = conn.cursor()
 
         cursor.execute("""
-            SELECT id, title, content, tags, created_at, updated_at
+            SELECT id, title, content, tags, created_at, updated_at, is_archived
             FROM notes
             WHERE id = ?
         """, (note_id,))
@@ -40,8 +57,8 @@ class NoteService:
         cursor = conn.cursor()
 
         cursor.execute("""
-            INSERT INTO notes (title, content, tags, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO notes (title, content, tags, created_at, updated_at, is_archived)
+            VALUES (?, ?, ?, ?, ?, 0)
         """, (title, content, tags, now, now))
 
         conn.commit()
@@ -59,8 +76,29 @@ class NoteService:
         cursor.execute("""
             UPDATE notes
             SET title = ?, content = ?, tags = ?, updated_at = ?
-            WHERE id = ?
+            WHERE id = ? AND is_archived = 0
         """, (title, content, tags, now, note_id))
+
+        conn.commit()
+        updated_count = cursor.rowcount
+        conn.close()
+
+        if updated_count == 0:
+            return None
+
+        return self.get_note_by_id(note_id)
+
+    def archive_note(self, note_id):
+        now = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            UPDATE notes
+            SET is_archived = 1, updated_at = ?
+            WHERE id = ? AND is_archived = 0
+        """, (now, note_id))
 
         conn.commit()
         updated_count = cursor.rowcount
@@ -93,9 +131,10 @@ class NoteService:
         search_pattern = f"%{query}%"
 
         cursor.execute("""
-            SELECT id, title, content, tags, created_at, updated_at
+            SELECT id, title, content, tags, created_at, updated_at, is_archived
             FROM notes
-            WHERE title LIKE ? OR content LIKE ? OR tags LIKE ?
+            WHERE is_archived = 0
+              AND (title LIKE ? OR content LIKE ? OR tags LIKE ?)
             ORDER BY id DESC
         """, (search_pattern, search_pattern, search_pattern))
 
@@ -111,9 +150,9 @@ class NoteService:
         search_pattern = f"%{tag}%"
 
         cursor.execute("""
-            SELECT id, title, content, tags, created_at, updated_at
+            SELECT id, title, content, tags, created_at, updated_at, is_archived
             FROM notes
-            WHERE tags LIKE ?
+            WHERE is_archived = 0 AND tags LIKE ?
             ORDER BY id DESC
         """, (search_pattern,))
 
