@@ -1,3 +1,4 @@
+from datetime import datetime
 from database import get_connection
 
 
@@ -7,7 +8,7 @@ class NoteService:
         cursor = conn.cursor()
 
         cursor.execute("""
-            SELECT id, title, content, tags
+            SELECT id, title, content, tags, created_at, updated_at
             FROM notes
             ORDER BY id DESC
         """)
@@ -22,7 +23,7 @@ class NoteService:
         cursor = conn.cursor()
 
         cursor.execute("""
-            SELECT id, title, content, tags
+            SELECT id, title, content, tags, created_at, updated_at
             FROM notes
             WHERE id = ?
         """, (note_id,))
@@ -33,13 +34,15 @@ class NoteService:
         return dict(row) if row else None
 
     def create_note(self, title, content, tags):
+        now = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
         conn = get_connection()
         cursor = conn.cursor()
 
         cursor.execute("""
-            INSERT INTO notes (title, content, tags)
-            VALUES (?, ?, ?)
-        """, (title, content, tags))
+            INSERT INTO notes (title, content, tags, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?)
+        """, (title, content, tags, now, now))
 
         conn.commit()
         note_id = cursor.lastrowid
@@ -48,14 +51,16 @@ class NoteService:
         return self.get_note_by_id(note_id)
 
     def update_note(self, note_id, title, content, tags):
+        now = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
         conn = get_connection()
         cursor = conn.cursor()
 
         cursor.execute("""
             UPDATE notes
-            SET title = ?, content = ?, tags = ?
+            SET title = ?, content = ?, tags = ?, updated_at = ?
             WHERE id = ?
-        """, (title, content, tags, note_id))
+        """, (title, content, tags, now, note_id))
 
         conn.commit()
         updated_count = cursor.rowcount
@@ -88,7 +93,7 @@ class NoteService:
         search_pattern = f"%{query}%"
 
         cursor.execute("""
-            SELECT id, title, content, tags
+            SELECT id, title, content, tags, created_at, updated_at
             FROM notes
             WHERE title LIKE ? OR content LIKE ? OR tags LIKE ?
             ORDER BY id DESC
@@ -106,7 +111,7 @@ class NoteService:
         search_pattern = f"%{tag}%"
 
         cursor.execute("""
-            SELECT id, title, content, tags
+            SELECT id, title, content, tags, created_at, updated_at
             FROM notes
             WHERE tags LIKE ?
             ORDER BY id DESC

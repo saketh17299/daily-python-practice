@@ -149,3 +149,9 @@ curl -X DELETE http://127.0.0.1:5000/notes/1
 - Add created_at and updated_at timestamps
 - Add pagination
 - Add authentication
+
+## New Features (Day 8.1)
+
+- Added `created_at` timestamp for note creation
+- Added `updated_at` timestamp for note updates
+- Automatically updates `updated_at` when note is modified
