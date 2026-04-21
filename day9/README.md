@@ -171,3 +171,12 @@ curl -X DELETE http://127.0.0.1:5000/students/1
 - Add search by student name
 - Add pagination
 - Add subject-wise analytics
+
+## New Features (Day 9.2)
+
+- Added topper endpoint
+- Returns the student with the highest average marks
+
+### New Endpoint
+
+GET /students/topper

@@ -47,16 +47,17 @@ def home():
             "GET /students",
             "GET /students?result=Pass",
             "GET /students?result=Fail",
+            "GET /students/topper",
             "GET /students/<id>",
             "POST /students",
             "PUT /students/<id>",
             "DELETE /students/<id>"
         ],
         "next_improvements": [
-            "topper endpoint",
             "search by student name",
             "pagination",
-            "subject-wise analytics"
+            "subject-wise analytics",
+            "ranking list"
         ]
     })
 
@@ -73,6 +74,16 @@ def get_students():
         students = [student for student in students if student["result"] == result_filter]
 
     return jsonify(students), 200
+
+
+@app.route("/students/topper", methods=["GET"])
+def get_topper():
+    topper = student_service.get_topper()
+
+    if not topper:
+        return jsonify({"error": "No student records found."}), 404
+
+    return jsonify(topper), 200
 
 
 @app.route("/students/<int:student_id>", methods=["GET"])

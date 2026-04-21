@@ -52,6 +52,22 @@ class StudentService:
 
         return dict(row) if row else None
 
+    def get_topper(self):
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT id, name, math_marks, science_marks, english_marks, average, result, grade
+            FROM students
+            ORDER BY average DESC, id ASC
+            LIMIT 1
+        """)
+
+        row = cursor.fetchone()
+        conn.close()
+
+        return dict(row) if row else None
+
     def create_student(self, name, math_marks, science_marks, english_marks):
         average = self.calculate_average(math_marks, science_marks, english_marks)
         result = self.calculate_result(math_marks, science_marks, english_marks)
