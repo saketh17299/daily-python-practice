@@ -13,6 +13,8 @@ This project is a Student Grades API built with Flask and SQLite.
 - Delete student record
 - Automatically calculate average
 - Automatically calculate pass/fail result
+- Automatically calculate grade letter
+- Filter students by result
 
 ## Tech Used
 
@@ -29,11 +31,20 @@ This project is a Student Grades API built with Flask and SQLite.
 - english_marks
 - average
 - result
+- grade
 
 ## Result Logic
 
 - A student passes only if marks in all subjects are 35 or above
 - Otherwise result is Fail
+
+## Grade Logic
+
+- A: 90 and above
+- B: 75 to 89.99
+- C: 60 to 74.99
+- D: 50 to 59.99
+- F: below 50
 
 ## API Endpoints
 
@@ -44,6 +55,14 @@ Shows API information.
 ### GET /students
 
 Get all student records.
+
+### GET /students?result=Pass
+
+Get only passed students.
+
+### GET /students?result=Fail
+
+Get only failed students.
 
 ### GET /students/{id}
 
@@ -75,6 +94,7 @@ Delete a student record.
 ## How to Run
 
 ```bash
+rm students.db
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -108,6 +128,18 @@ curl -X POST http://127.0.0.1:5000/students \
 curl http://127.0.0.1:5000/students
 ```
 
+### Get only passed students
+
+```bash
+curl "http://127.0.0.1:5000/students?result=Pass"
+```
+
+### Get only failed students
+
+```bash
+curl "http://127.0.0.1:5000/students?result=Fail"
+```
+
 ### Get one student
 
 ```bash
@@ -135,8 +167,7 @@ curl -X DELETE http://127.0.0.1:5000/students/1
 
 ## Scope for Next Improvements
 
-- Add grade letter calculation
-- Add filter endpoint for pass/fail
-- Add search by student name
 - Add topper endpoint
+- Add search by student name
 - Add pagination
+- Add subject-wise analytics

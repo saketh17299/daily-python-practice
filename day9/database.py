@@ -21,7 +21,8 @@ def initialize_database():
             science_marks REAL NOT NULL,
             english_marks REAL NOT NULL,
             average REAL NOT NULL,
-            result TEXT NOT NULL
+            result TEXT NOT NULL,
+            grade TEXT NOT NULL
         )
     """)
 

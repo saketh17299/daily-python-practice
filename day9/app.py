@@ -45,24 +45,33 @@ def home():
         "message": "Student Grades API is running",
         "endpoints": [
             "GET /students",
+            "GET /students?result=Pass",
+            "GET /students?result=Fail",
             "GET /students/<id>",
             "POST /students",
             "PUT /students/<id>",
             "DELETE /students/<id>"
         ],
         "next_improvements": [
-            "grade letter calculation",
-            "filter by pass/fail",
-            "search by student name",
             "topper endpoint",
-            "pagination"
+            "search by student name",
+            "pagination",
+            "subject-wise analytics"
         ]
     })
 
 
 @app.route("/students", methods=["GET"])
 def get_students():
+    result_filter = request.args.get("result")
     students = student_service.get_all_students()
+
+    if result_filter:
+        result_filter = result_filter.strip().capitalize()
+        if result_filter not in {"Pass", "Fail"}:
+            return jsonify({"error": "Result filter must be Pass or Fail."}), 400
+        students = [student for student in students if student["result"] == result_filter]
+
     return jsonify(students), 200
 
 
