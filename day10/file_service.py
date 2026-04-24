@@ -53,3 +53,18 @@ class FileService:
         conn.close()
 
         return dict(row) if row else None
+
+    def delete_file_metadata(self, file_id):
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            DELETE FROM files
+            WHERE id = ?
+        """, (file_id,))
+
+        conn.commit()
+        deleted_count = cursor.rowcount
+        conn.close()
+
+        return deleted_count > 0

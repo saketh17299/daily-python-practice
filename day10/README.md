@@ -53,3 +53,25 @@ python3 app.py
 - File validation
 - Authentication
 - Cloud storage (AWS S3)
+
+## New Features (Day 10.1)
+
+- Added file delete endpoint
+- Added allowed file type validation
+- Added max file size validation
+
+### Allowed File Types
+
+- txt
+- pdf
+- png
+- jpg
+- jpeg
+
+### Max File Size
+
+5 MB
+
+### Delete File
+
+DELETE /files/<{id}>
