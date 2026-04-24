@@ -1,9 +1,5 @@
-import os
 from datetime import datetime
 from database import get_connection
-
-
-UPLOAD_FOLDER = "uploads"
 
 
 class FileService:
@@ -24,15 +20,24 @@ class FileService:
 
         return self.get_file_by_id(file_id)
 
-    def get_all_files(self):
+    def get_all_files(self, file_type=None):
         conn = get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("""
-            SELECT id, filename, stored_name, file_size, uploaded_at
-            FROM files
-            ORDER BY id DESC
-        """)
+        if file_type:
+            pattern = f"%.{file_type.lower()}"
+            cursor.execute("""
+                SELECT id, filename, stored_name, file_size, uploaded_at
+                FROM files
+                WHERE filename LIKE ?
+                ORDER BY id DESC
+            """, (pattern,))
+        else:
+            cursor.execute("""
+                SELECT id, filename, stored_name, file_size, uploaded_at
+                FROM files
+                ORDER BY id DESC
+            """)
 
         rows = cursor.fetchall()
         conn.close()

@@ -75,3 +75,18 @@ python3 app.py
 ### Delete File
 
 DELETE /files/<{id}>
+
+## New Features (Day 10.2)
+
+- Preview files directly in browser
+- Filter uploaded files by type
+
+### Preview File
+
+GET /files/<{id}>/preview
+
+### Filter Files
+
+GET /files?type=pdf
+GET /files?type=png
+GET /files?type=jpg

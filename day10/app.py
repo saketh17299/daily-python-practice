@@ -32,7 +32,9 @@ def home():
         "endpoints": [
             "POST /upload",
             "GET /files",
+            "GET /files?type=pdf",
             "GET /files/<id>/download",
+            "GET /files/<id>/preview",
             "DELETE /files/<id>"
         ],
         "allowed_file_types": list(ALLOWED_EXTENSIONS),
@@ -80,7 +82,17 @@ def upload_file():
 
 @app.route("/files", methods=["GET"])
 def get_files():
-    files = file_service.get_all_files()
+    file_type = request.args.get("type")
+
+    if file_type:
+        file_type = file_type.strip().lower()
+        if file_type not in ALLOWED_EXTENSIONS:
+            return jsonify({
+                "error": "Invalid file type filter.",
+                "allowed_types": list(ALLOWED_EXTENSIONS)
+            }), 400
+
+    files = file_service.get_all_files(file_type=file_type)
     return jsonify(files), 200
 
 
@@ -95,6 +107,20 @@ def download_file(file_id):
         directory=app.config["UPLOAD_FOLDER"],
         path=file["stored_name"],
         as_attachment=True
+    )
+
+
+@app.route("/files/<int:file_id>/preview", methods=["GET"])
+def preview_file(file_id):
+    file = file_service.get_file_by_id(file_id)
+
+    if not file:
+        return jsonify({"error": "File not found"}), 404
+
+    return send_from_directory(
+        directory=app.config["UPLOAD_FOLDER"],
+        path=file["stored_name"],
+        as_attachment=False
     )
 
 
