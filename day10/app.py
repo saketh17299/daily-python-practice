@@ -25,12 +25,42 @@ def is_allowed_file(filename):
     return extension in ALLOWED_EXTENSIONS
 
 
+def save_uploaded_file(file):
+    if file.filename == "":
+        return None, "Empty filename"
+
+    if not is_allowed_file(file.filename):
+        return None, "File type not allowed"
+
+    file.seek(0, os.SEEK_END)
+    file_size = file.tell()
+    file.seek(0)
+
+    if file_size > MAX_FILE_SIZE:
+        return None, "File size exceeds 5 MB limit"
+
+    unique_name = str(uuid.uuid4())
+    stored_name = unique_name + "_" + file.filename
+    file_path = os.path.join(app.config["UPLOAD_FOLDER"], stored_name)
+
+    file.save(file_path)
+
+    saved_file = file_service.save_file_metadata(
+        filename=file.filename,
+        stored_name=stored_name,
+        file_size=file_size
+    )
+
+    return saved_file, None
+
+
 @app.route("/", methods=["GET"])
 def home():
     return jsonify({
         "message": "File Upload API is running",
         "endpoints": [
             "POST /upload",
+            "POST /upload-multiple",
             "GET /files",
             "GET /files?type=pdf",
             "GET /files/<id>/download",
@@ -47,37 +77,45 @@ def upload_file():
     if "file" not in request.files:
         return jsonify({"error": "No file provided"}), 400
 
-    file = request.files["file"]
+    saved_file, error = save_uploaded_file(request.files["file"])
 
-    if file.filename == "":
-        return jsonify({"error": "Empty filename"}), 400
-
-    if not is_allowed_file(file.filename):
-        return jsonify({
-            "error": "File type not allowed.",
-            "allowed_types": list(ALLOWED_EXTENSIONS)
-        }), 400
-
-    file.seek(0, os.SEEK_END)
-    file_size = file.tell()
-    file.seek(0)
-
-    if file_size > MAX_FILE_SIZE:
-        return jsonify({"error": "File size exceeds 5 MB limit."}), 400
-
-    unique_name = str(uuid.uuid4())
-    stored_name = unique_name + "_" + file.filename
-
-    file_path = os.path.join(app.config["UPLOAD_FOLDER"], stored_name)
-    file.save(file_path)
-
-    saved_file = file_service.save_file_metadata(
-        filename=file.filename,
-        stored_name=stored_name,
-        file_size=file_size
-    )
+    if error:
+        return jsonify({"error": error}), 400
 
     return jsonify(saved_file), 201
+
+
+@app.route("/upload-multiple", methods=["POST"])
+def upload_multiple_files():
+    if "files" not in request.files:
+        return jsonify({"error": "No files provided. Use form-data key 'files'."}), 400
+
+    files = request.files.getlist("files")
+
+    if not files:
+        return jsonify({"error": "No files selected"}), 400
+
+    uploaded_files = []
+    failed_files = []
+
+    for file in files:
+        saved_file, error = save_uploaded_file(file)
+
+        if error:
+            failed_files.append({
+                "filename": file.filename,
+                "error": error
+            })
+        else:
+            uploaded_files.append(saved_file)
+
+    return jsonify({
+        "message": "Multi-file upload completed.",
+        "uploaded_count": len(uploaded_files),
+        "failed_count": len(failed_files),
+        "uploaded_files": uploaded_files,
+        "failed_files": failed_files
+    }), 207 if failed_files else 201
 
 
 @app.route("/files", methods=["GET"])

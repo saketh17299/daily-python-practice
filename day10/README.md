@@ -90,3 +90,20 @@ GET /files/<{id}>/preview
 GET /files?type=pdf
 GET /files?type=png
 GET /files?type=jpg
+
+## New Features (Day 10.3)
+
+- Added multi-file upload endpoint
+- Reused validation for both single and multiple uploads
+- Returns uploaded and failed file details
+
+### Multi-file Upload
+
+POST /upload-multiple
+
+Use Postman:
+
+- Body → form-data
+- Key: `files`
+- Type: File
+- Add multiple rows with the same key: `files`
