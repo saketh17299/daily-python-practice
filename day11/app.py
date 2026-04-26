@@ -68,23 +68,45 @@ def home():
         "message": "Weather Journal API is running",
         "endpoints": [
             "GET /entries",
+            "GET /entries?mood=happy",
+            "GET /entries?start_date=2026-04-01&end_date=2026-04-30",
             "GET /entries/<id>",
             "POST /entries",
             "PUT /entries/<id>",
             "DELETE /entries/<id>"
         ],
         "next_improvements": [
-            "filter by mood",
-            "weekly productivity summary",
             "average productivity score",
-            "date range filter"
+            "weekly productivity summary",
+            "most common mood",
+            "weather-based insights"
         ]
     })
 
 
 @app.route("/entries", methods=["GET"])
 def get_entries():
-    entries = journal_service.get_all_entries()
+    mood = request.args.get("mood")
+    start_date = request.args.get("start_date")
+    end_date = request.args.get("end_date")
+
+    if mood:
+        mood = mood.strip().lower()
+        if mood not in VALID_MOODS:
+            return jsonify({"error": "Invalid mood value."}), 400
+
+    if start_date and not is_valid_date(start_date):
+        return jsonify({"error": "Invalid start_date format. Use YYYY-MM-DD."}), 400
+
+    if end_date and not is_valid_date(end_date):
+        return jsonify({"error": "Invalid end_date format. Use YYYY-MM-DD."}), 400
+
+    entries = journal_service.get_all_entries(
+        mood=mood,
+        start_date=start_date,
+        end_date=end_date
+    )
+
     return jsonify(entries), 200
 
 

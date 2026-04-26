@@ -2,16 +2,32 @@ from database import get_connection
 
 
 class JournalService:
-    def get_all_entries(self):
+    def get_all_entries(self, mood=None, start_date=None, end_date=None):
         conn = get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("""
+        query = """
             SELECT id, entry_date, weather, mood, productivity_score, notes
             FROM journal_entries
-            ORDER BY entry_date DESC, id DESC
-        """)
+            WHERE 1=1
+        """
+        params = []
 
+        if mood:
+            query += " AND mood = ?"
+            params.append(mood)
+
+        if start_date:
+            query += " AND entry_date >= ?"
+            params.append(start_date)
+
+        if end_date:
+            query += " AND entry_date <= ?"
+            params.append(end_date)
+
+        query += " ORDER BY entry_date DESC, id DESC"
+
+        cursor.execute(query, params)
         rows = cursor.fetchall()
         conn.close()
 

@@ -146,3 +146,18 @@ curl -X DELETE http://127.0.0.1:5000/entries/1
 - Add average productivity score endpoint
 - Add weekly productivity summary
 - Add date range filter
+-
+
+## New Features (Day 11.1)
+
+- Filter journal entries by mood
+- Filter journal entries by date range
+- Combine mood and date filters
+
+### Examples
+
+GET /entries?mood=happy
+
+GET /entries?start_date=2026-04-01&end_date=2026-04-30
+
+GET /entries?mood=focused&start_date=2026-04-01&end_date=2026-04-30
