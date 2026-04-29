@@ -124,7 +124,10 @@ def update_expense(expense_id):
 
     return jsonify(expense), 200
 
-
+@app.route("/expenses/analytics", methods=["GET"])
+def get_expense_analytics():
+    analytics = expense_service.get_analytics()
+    return jsonify(analytics), 200
 @app.route("/expenses/<int:expense_id>", methods=["DELETE"])
 def delete_expense(expense_id):
     deleted = expense_service.delete_expense(expense_id)

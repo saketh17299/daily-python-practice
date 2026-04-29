@@ -96,3 +96,34 @@ class ExpenseService:
         conn.close()
 
         return deleted_count > 0
+
+    def get_analytics(self):
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT COUNT(*) as expense_count,
+                   COALESCE(SUM(amount), 0) as total_spending
+            FROM expenses
+        """)
+        summary = dict(cursor.fetchone())
+
+        cursor.execute("""
+            SELECT category,
+                   COALESCE(SUM(amount), 0) as total
+            FROM expenses
+            GROUP BY category
+            ORDER BY total DESC
+        """)
+        category_totals = [dict(row) for row in cursor.fetchall()]
+
+        highest_category = category_totals[0] if category_totals else None
+
+        conn.close()
+
+        return {
+            "expense_count": summary["expense_count"],
+            "total_spending": round(summary["total_spending"], 2),
+            "highest_spending_category": highest_category,
+            "category_totals": category_totals
+        }
