@@ -136,7 +136,10 @@ def delete_expense(expense_id):
         return jsonify({"error": "Not found"}), 404
 
     return jsonify({"message": "Deleted successfully"}), 200
-
+@app.route("/expenses/monthly-summary", methods=["GET"])
+def get_monthly_summary():
+    summary = expense_service.get_monthly_summary()
+    return jsonify(summary), 200
 
 if __name__ == "__main__":
     initialize_database()
