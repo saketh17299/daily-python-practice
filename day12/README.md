@@ -101,3 +101,22 @@ Create a new expense.
 ### Analytics Endpoint
 
 GET /expenses/analytics
+
+## New Features (Day 12.3)
+
+- Added monthly category budgets
+- Added upsert budget logic
+- Added budget status endpoint
+- Added overspending detection
+
+### Set Budget
+
+POST /budgets
+
+```json
+{
+  "category": "food",
+  "month": "2026-04",
+  "budget_amount": 300
+}
+```

@@ -24,5 +24,15 @@ def initialize_database():
         )
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS budgets (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            category TEXT NOT NULL,
+            month TEXT NOT NULL,
+            budget_amount REAL NOT NULL,
+            UNIQUE(category, month)
+        )
+    """)
+
     conn.commit()
     conn.close()
