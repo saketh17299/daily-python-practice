@@ -90,3 +90,14 @@ Create a new expense.
   "notes": "Ate at a restaurant"
 }
 ```
+
+## New Features (Day 12.1)
+
+- Added expense analytics endpoint
+- Added category-wise spending totals
+- Added total spending
+- Added highest spending category
+
+### Analytics Endpoint
+
+GET /expenses/analytics

@@ -89,14 +89,3 @@ I’m focusing on writing practical code that reflects real-world use cases rath
 ## Note
 
 This is an active repository and will be updated daily.
-
-## New Features (Day 12.1)
-
-- Added expense analytics endpoint
-- Added category-wise spending totals
-- Added total spending
-- Added highest spending category
-
-### Analytics Endpoint
-
-GET /expenses/analytics

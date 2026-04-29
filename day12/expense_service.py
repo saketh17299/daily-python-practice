@@ -127,3 +127,29 @@ class ExpenseService:
             "highest_spending_category": highest_category,
             "category_totals": category_totals
         }
+    def get_monthly_summary(self):
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+                SELECT 
+                SUBSTR(expense_date, 1, 7) as month,
+                COUNT(*) as expense_count,
+                COALESCE(SUM(amount), 0) as total_spending
+                FROM expenses
+                GROUP BY month
+                ORDER BY month DESC
+        """)
+
+        rows = cursor.fetchall()
+        conn.close()
+
+        result = []
+        for row in rows:
+                result.append({
+                "month": row["month"],
+                "expense_count": row["expense_count"],
+                "total_spending": round(row["total_spending"], 2)
+                })
+
+        return result
