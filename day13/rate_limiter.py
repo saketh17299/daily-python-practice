@@ -12,9 +12,9 @@ class RateLimiter:
         now = time.time()
         timestamps = self.requests[api_key]
 
-        # remove old timestamps
         self.requests[api_key] = [
-            t for t in timestamps if now - t < self.window
+            timestamp for timestamp in timestamps
+            if now - timestamp < self.window
         ]
 
         if len(self.requests[api_key]) >= self.limit:
