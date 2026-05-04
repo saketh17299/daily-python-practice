@@ -60,6 +60,8 @@ def home():
         "message": "Job Application Tracker API is running",
         "endpoints": [
             "GET /applications",
+            "GET /applications?status=applied",
+            "GET /applications/analytics",
             "GET /applications/<id>",
             "POST /applications",
             "PUT /applications/<id>",
@@ -67,18 +69,31 @@ def home():
         ],
         "valid_statuses": list(VALID_STATUSES),
         "next_improvements": [
-            "filter by status",
-            "application analytics",
-            "follow-up reminder date",
-            "export to CSV"
+            "interview date tracking",
+            "follow-up reminders",
+            "export applications to CSV",
+            "search by company or role"
         ]
     })
 
 
 @app.route("/applications", methods=["GET"])
 def get_applications():
-    applications = application_service.get_all_applications()
+    status = request.args.get("status")
+
+    if status:
+        status = status.strip().lower()
+        if status not in VALID_STATUSES:
+            return jsonify({"error": "Invalid status"}), 400
+
+    applications = application_service.get_all_applications(status)
     return jsonify(applications), 200
+
+
+@app.route("/applications/analytics", methods=["GET"])
+def get_analytics():
+    analytics = application_service.get_analytics()
+    return jsonify(analytics), 200
 
 
 @app.route("/applications/<int:application_id>", methods=["GET"])

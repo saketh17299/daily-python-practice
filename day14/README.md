@@ -82,3 +82,21 @@ Create a new application.
   "notes": "Applied via careers page"
 }
 ```
+
+## New Features (Day 14.1)
+
+- Filter applications by status
+- Added analytics endpoint for application counts
+
+### Filter by Status
+
+GET /applications?status=applied
+
+### Analytics
+
+GET /applications/analytics
+
+Returns:
+
+- total applications
+- count by status
